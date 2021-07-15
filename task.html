@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./leaflet.measure.css"/>
+
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+      integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+      crossorigin=""
+    />
+
+    <title>Task</title>
+  </head>
+
+  <style>
+    #mapid {
+      height:100vh;
+      width: 100%;
+      
+    }
+    .info {
+    padding: 6px 8px;
+    font: 14px/16px Arial, Helvetica, sans-serif;
+    background: white;
+    background: rgba(255,255,255,0.8);
+    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    border-radius: 5px;
+}
+.info h4 {
+    margin: 0 0 5px;
+    color: #777;
+}
+
+
+.legend {
+    line-height: 18px;
+    color: #555;
+}
+.legend i {
+    width: 180px;
+    height: 18px;
+    float: left;
+    margin-right: 8px;
+    opacity: 0.7;
+}
+
+  </style>
+
+  <body >
+    <div class="container">
+        <div class="sidebar">
+            <div class="top">
+                <div class="btn">ADD PIN</div>
+            </div>
+                    
+
+
+            <div id="cont">
+              
+             <table id="table">
+                <tbody id="table-body">
+                 <tr>
+                   <th>Sr.</th>
+                   <th>Lat</th>
+                   <th>Long</th>
+                   <th>Action</th>
+     
+                 </tr>
+                 <!-- <tr>
+                   <td id="table-sr">1</td>
+                   <td id="table-lat">12</td>
+                   <td id="table-lng">21</td>
+                   <td class="delete">DELETE</td>
+                 </tr> -->
+                </tbody>
+               </table>
+            </div>
+         </div>
+         <div id="mapid">Hello</div>
+    </div>
+
+  </body>
+</html>
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+<script src="./usstates.js"></script>
+<script src="./leaflet.measure.js"></script>
+
+<script>
+
+  var map = L.map("mapid").setView([33.835293, -117.914505], 11);
+  var add = document.querySelector(".btn");
+  var del = document.querySelector(".delete");
+
+  var latitude = []
+  var longitute = []
+
+  var tiles = L.tileLayer(
+    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+    {
+      attribution:
+        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    }
+  );
+
+  tiles.addTo(map);
+ 
+   var latlong = map.getCenter()
+   var marker
+
+   
+   var markers = []
+   var id
+
+function createMarker(coords) {
+  
+  if (markers.length < 1) id = 0
+  else id = markers[markers.length - 1]._id + 1
+ 
+  myMarker = L.marker(coords, {
+    draggable: false
+  });
+  myMarker._id = id
+  
+  map.addLayer(myMarker)
+  markers.push(myMarker)
+
+  console.log('marker ',marker, 'id: ', id)
+}
+
+
+function clearMarker(id) {
+  console.log(markers)
+  var new_markers = []
+  markers.forEach(function(marker) {
+    if (marker._id == id) map.removeLayer(marker)
+    else new_markers.push(marker)
+  })
+  markers = new_markers
+}
+
+
+// console.log(id,'id')
+
+   add.addEventListener('click',function(){
+    console.log(id)
+
+       var {lat, lng} = map.getCenter()
+       latitude.push(lat);
+       longitute.push(lng);
+
+      //  console.log( latitude.length, longitute,'latlong')
+      //   console.log(latitude)
+      //  console.log( latitude.length, latitude[length],'latlength')
+
+      // marker = new L.marker([lat, lng])
+      // map.addLayer(marker)
+     
+      createMarker([lat, lng])
+
+
+      var table = document.getElementById("table");
+      var button = document.createElement('input');
+  
+      button.setAttribute('type', 'button');
+      button.setAttribute('value', 'Remove');
+      button.setAttribute('id', id);
+      button.setAttribute('onclick', 'removeRow(this)');
+
+
+      var row = table.insertRow(-1);
+      var cell1 = row.insertCell(0);
+      var cell2 = row.insertCell(1);
+      var cell3 = row.insertCell(2);
+      var cell4 = row.insertCell(3);
+      cell1.innerHTML = latitude.length;
+
+      console.log(row,'row')
+
+      for(var i =0; i < latitude.length; i++){
+        cell2.innerHTML = latitude[i];
+      cell3.innerHTML = longitute[i];
+
+      }
+
+      cell4.appendChild(button);
+      cell4.innerHTML = appendChild(button);  ;
+          })
+
+    // del.addEventListener('click',function() {
+    //   map.removeLayer(marker)
+    // })
+
+    function removeRow(oButton) {
+      clearMarker(oButton.id)
+      var empTab = document.getElementById('table');
+      empTab.deleteRow(oButton.parentNode.parentNode.rowIndex)
+      map.removeLayer(marker)
+    }
+      
+</script>
+
+
+
+

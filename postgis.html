@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./leaflet.measure.css" />
+
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+      integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+      crossorigin=""
+    />
+
+    <title>Document</title>
+  </head>
+
+  <style>
+    #mapid {
+      height: 100vh;
+      width: 100%;
+    }
+    .info {
+      padding: 6px 8px;
+      font: 14px/16px Arial, Helvetica, sans-serif;
+      background: white;
+      background: rgba(255, 255, 255, 0.8);
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+      border-radius: 5px;
+    }
+    .info h4 {
+      margin: 0 0 5px;
+      color: #777;
+    }
+
+    .legend {
+      line-height: 18px;
+      color: #555;
+    }
+    .legend i {
+      width: 180px;
+      height: 20px;
+      float: left;
+      margin-right: 8px;
+      opacity: 0.5;
+    }
+  </style>
+
+  <body>
+    <div id="mapid">Hello</div>
+  </body>
+</html>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+<script src="./usstates.js"></script>
+<script src="./leaflet.measure.js"></script>
+
+<script>
+  var mapboxAccessToken =
+    "sk.eyJ1Ijoic2FhZHVzdWZhemkiLCJhIjoiY2tyMGNleGhxMXF3ODJwbzY0cnN3cWhnZSJ9.VhprOcIt1Mqu38g_xpJ9qQ";
+  var map = L.map("mapid").setView([33.835293, -117.914505], 13);
+
+  L.tileLayer(
+    "https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=" +
+      mapboxAccessToken,
+    {
+      id: "mapbox/light-v9",
+      attribution: "Test Maps by saad",
+      tileSize: 512,
+      transparent: true,
+      zoomOffset: -1,
+    }
+  ).addTo(map);
+
+  var states 
+  var obj;
+
+  function fetchData() {
+    var p1 = map.getBounds().getSouthWest().lng;
+    var p2 = map.getBounds().getSouthWest().lat;
+    var p3 = map.getBounds().getNorthEast().lng;
+    var p4 = map.getBounds().getNorthEast().lat;
+
+    var bounds = JSON.stringify({
+      p1: p1,
+      p2: p2,
+      p3: p3,
+      p4: p4,
+    });
+
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+
+    axios
+      .post("http://localhost:5000/api/geojson", bounds, config)
+
+      .then((response) => {
+        const res = response.data;
+        // console.log(`response`, res);
+        states = res.json_build_object;
+
+        L.geoJson(states).addTo(map);
+      })
+      .then(() => {
+       
+        // Map
+
+        const getColor = (e) => {
+          // console.log(e, "zone_code");
+          return e == "RS-4"
+            ? "#BCFDB6"
+            : e == "O-L"
+            ? "#38AEFF"
+            : e == "PR"
+            ? "#FF96DA"
+            : e == "SP 90-2"
+            ? "#51C046"
+            : e == "SP 92-2"
+            ? "#FD8D3C"
+            : e == "RM-3"
+            ? "#FEB24C"
+            : e == "RS-2"
+            ? "#FED976"
+            : e == "SP 88-1"
+            ? "#A150BE"
+            : e == "RM-4"
+            ? "#FFDC89"
+            : e == "SP"
+            ? "#FFD4D7"
+            : e == "RM-1"
+            ? "#E9D1A5"
+            : e == "RM-2"
+            ? "#CACDCB"
+            : e == "I"
+            ? "#33A6FB"
+            : e == "SP 2015-1"
+            ? "#878986"
+            : e == "SP 87-1"
+            ? "#28C0BA"
+            : e == "SP 92-1"
+            ? "#5C1290"
+            : e == "SP 93-1"
+            ? "#FF9583"
+            : e == "SP 90-4"
+            ? "#FF9278"
+            : e == "T"
+            ? "#FF9E0D"
+            : e == "SP 90-1"
+            ? "#A318E2"
+            : e == "RH-3"
+            ? "#B5AD87"
+            : e == "C-G"
+            ? "#102214"
+            : e == "RS-3"
+            ? "#756CDB"
+            : e == "OS"
+            ? "#016FF9"
+            : e == "RM-2"
+            ? "#8378E5"
+            : e == "O-H"
+            ? "#016FF9"
+            : e == "RH-2"
+            ? "#761A79"
+            : e == "RH-1"
+            ? "#F3D29E"
+            : e == "SP 88-2"
+            ? "yellow"
+            : "red";
+        };
+
+        const style = (feature) => {
+          // console.log(feature.properties, "Fea");
+          // console.log(feature.properties.zone_code)
+
+          return {
+            fillColor: getColor(feature.properties.zone_code),
+            weight: 2,
+            opacity: 0.1,
+            color: "white",
+            dashArray: 2,
+            fillOpacity: 0.1,
+          };
+        };
+        
+        L.geoJson(states, { style: style }).addTo(map);
+
+        const highlightFeature = (e) => {
+          var layer = e.target;
+
+          layer.setStyle({
+            weight: 3,
+            color: "#cd10d1",
+            dashArray: "",
+            fillOpacity: 0.4,
+          });
+
+          if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+            layer.bringToFront();
+            info.update(layer.feature.properties);
+          }
+        };
+
+        function resetHighlight(e) {
+          geojson.resetStyle(e.target);
+          info.update();
+        }
+
+        function zoomToFeature(e) {
+          map.fitBounds(e.target.getBounds());
+        }
+
+        function onEachFeature(feature, layer) {
+          layer.on({
+            mouseover: highlightFeature,
+            mouseout: resetHighlight,
+            click: zoomToFeature,
+          });
+        }
+        var geojson;
+        console.log(states, "obj");
+        geojson = L.geoJson(states, {
+          style: style,
+          onEachFeature: onEachFeature,
+        }).addTo(map);
+
+
+       
+
+
+
+
+
+        // CUSTOM CONTROL
+
+        var info = L.control();
+
+        info.onAdd = function (map) {
+          this._div = L.DomUtil.create("div", "info"); // create a div with a class "info"
+          this.update();
+          return this._div;
+        };
+
+        // method that we will use to update the control based on feature properties passed
+        info.update = function (props) {
+          // console.log(props,'props')
+          this._div.innerHTML =
+            "<h4>Building MAX HEIGHT </h4>" +
+            (props
+              ? "<b>" + props.zone + "</b><br />" + props.zone_code+ " Zone Code"
+              : "Hover over a building");
+        };
+
+        info.addTo(map);
+
+        // legend
+        var legend = L.control({ position: "bottomright" });
+
+        legend.onAdd = function (map) {
+          var div = L.DomUtil.create("div", "info legend"),
+            grades = ["RS-4","O-L","PR","SP 90-2","SP 92-2","RM-3","RS-2","SP 88-1","RM-4","SP","RM-1","RM-2","RS-1","I","SP 2015-1","SP 87-1","SP 92-1","SP 93-1","SP 90-4","T","SP 90-1","RH-3","C-G","RS-3","OS","O-H","RH-2","RH-1","SP 88-2"],
+            labels = []; 
+          
+          // loop through our density intervals and generate a label with a colored square for each interval
+          for (var i = 0; i < grades.length; i++) {
+            // console.log(getColor(grades[i]))
+            // console.log(grades[i] + 1)
+            div.innerHTML +=
+              '<i style="background:' +
+              getColor(grades[i]) +
+              '"></i> ' +
+              grades[i] +
+              (grades[i] ? "&ndash;" + grades[i + 1] + "<br>" : "+");
+          }
+
+          return div;
+        };
+
+        legend.addTo(map);
+
+        // TILE LAYER
+
+        // Dark Theme
+
+        // var CartoDB_DarkMatter = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        // attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+        // subdomains: 'abcd',
+        // 	maxZoom: 19
+        // });
+        // CartoDB_DarkMatter.addTo(map);
+
+        // Google Map Layer
+
+        googleStreets = L.tileLayer(
+          "http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}",
+          {
+            maxZoom: 20,
+            subdomains: ["mt0", "mt1", "mt2", "mt3"],
+          }
+        );
+        googleStreets.addTo(map);
+
+        //  // Satelite Layer
+
+        // googleSat = L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',{
+        //    maxZoom: 20,
+        //    subdomains:['mt0','mt1','mt2','mt3']
+        //  });
+        // googleSat.addTo(map);
+
+        // Measure
+
+        var plugin = L.control
+          .measure({
+            //  control position
+            position: "topleft",
+            //  weather to use keyboard control for this plugin
+            keyboard: true,
+            //  shortcut to activate measure
+            activeKeyCode: "M".charCodeAt(0),
+            //  shortcut to cancel measure, defaults to 'Esc'
+            cancelKeyCode: 27,
+            //  line color
+            lineColor: "red",
+            //  line weight
+            lineWeight: 2,
+            //  line dash
+            lineDashArray: "6, 6",
+            //  line opacity
+            lineOpacity: 1,
+            //  distance formatter
+            // formatDistance: function (val) {
+            //   return Math.round(1000 * val / 1609.344) / 1000 + 'mile';
+            // }
+          })
+          .addTo(map);
+      })
+
+      .catch((error) => console.error(error));
+  }
+
+
+   // zoom and pan
+
+   map.on('zoomend',()=>{
+          var zoomlevel = map.getZoom();
+          console.log(zoomlevel,'ZOOM END')
+    if(zoomlevel >14){
+      fetchData()
+    }else{
+      alert("Zoom in to see the data")
+    }
+
+        })
+</script>

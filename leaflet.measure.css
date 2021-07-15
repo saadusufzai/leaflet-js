@@ -1,0 +1,84 @@
+.container{
+	display: grid;
+	grid-template-columns: 30% 70%;
+}
+.sidebar{
+	text-align: center;
+}
+
+.sidebar .btn{
+	font-size: 24px;
+	padding: 10px;
+	display: inline-block;
+	background:red;
+	color: #fff;
+	border-radius: 8px;
+	margin: 2em;
+	
+}
+table {
+	font-family: arial, sans-serif;
+	border-collapse: collapse;
+	width: 100%;
+  }
+  
+  td, th {
+	border: 1px solid #dddddd;
+	text-align: left;
+	padding: 8px;
+  }
+  
+  tr:nth-child(even) {
+	background-color: #dddddd;
+  }
+
+table .delete{
+	color: red;
+	cursor: pointer;
+	font-weight: 800;
+}
+
+
+
+
+
+.leaflet-control-measure {
+	font-size: 16px;
+	font-weight: bold;
+	line-height: 21px;
+	}
+
+.leaflet-bar-part-top-and-bottom {
+	-webkit-border-radius: 4px 4px 4px 4px;
+	        border-radius: 4px 4px 4px 4px;
+	border-bottom: none;
+	}
+
+.leaflet-touch .leaflet-bar-part-top-and-bottom {
+	-webkit-border-radius: 7px 7px 7px 7px;
+	        border-radius: 7px 7px 7px 7px;
+	border-bottom: none;
+	}
+
+.leaflet-control-measure-on .leaflet-control-measure {
+	box-shadow: 0 0 8px rgba(10,10,10,1.0);
+	}
+
+.leaflet-measure-tooltip {
+	font: 9px/1.25 "Helvetica Neue", Arial, Helvetica, sans-serif;
+	background-color: rgba(255, 255, 255, 0.7);
+	box-shadow: 0 0 5px #BBB;
+	margin: 0;
+	padding: 2px;
+	width: auto !important;
+	height: auto !important;
+	white-space: nowrap;
+	}
+
+.leaflet-measure-tooltip-total {
+	font-weight: bold;
+	}
+
+.leaflet-measure-tooltip-difference {
+	color: #777;
+	}
