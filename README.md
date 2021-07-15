@@ -1,4 +1,4 @@
-# leaflet-js
+# leaflet js basic examples and getting started
 
 ## Things you can find in this repo 
 
