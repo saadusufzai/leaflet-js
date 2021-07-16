@@ -214,11 +214,44 @@
           map.fitBounds(e.target.getBounds());
         }
 
+        function polygonPopUp(e){
+          var {lat,lng} = e.latlng
+          var {gid} = e.target.feature.properties
+          var bounds = JSON.stringify({
+            gid:gid
+          });
+
+          const config = {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          };
+
+          axios
+            .post("http://localhost:5000/api/poly", bounds, config)
+
+            .then((response) => {
+              const res = response.data;
+
+             var  {gid, max_far, max_height, mi_lotarea, mi_lotwidt, z_sub_type, zone, zone_code, zone_type } = res;
+              console.log(max_far);
+              console.log(`response`, res.max_far);
+              var popup = L.popup()
+          .setLatLng([lat,lng])
+          .setContent('<h2>Gid: '+gid+'<br> max_far :'+ max_far+'<br> max_height:'+max_height+'<br> mi_lotarea :'+ mi_lotarea+'<br> mi_lotwidt :'+ mi_lotwidt+'<br> z_sub_type :'+ z_sub_type+'<br> zone :'+ zone+'<br> zone_code :'+ zone_code+'<br> zone_type :'+ zone_type+'</h2>')
+          .openOn(map)
+         console.log(e);
+            })
+
+          
+       
+        }
+
         function onEachFeature(feature, layer) {
           layer.on({
             mouseover: highlightFeature,
             mouseout: resetHighlight,
-            click: zoomToFeature,
+            click: polygonPopUp,
           });
         }
         var geojson;
